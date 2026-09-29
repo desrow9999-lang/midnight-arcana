@@ -109,7 +109,6 @@
       color: #fff;
       font-family: 'Noto Serif JP', serif;
       font-size: 13px;
-      transition: all 0.3s;
     }
     .input-dark:focus {
       outline: none;
@@ -139,7 +138,6 @@
       from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
     .cards-area {
       display: flex;
       justify-content: center;
@@ -171,11 +169,6 @@
       color: #f3e8ff;
       box-shadow: 0 0 20px rgba(168, 85, 247, 0.8);
     }
-    .tarot-card:hover:not(.flipped) {
-      transform: translateY(-4px);
-      border-color: #a855f7;
-    }
-
     .action-row {
       display: flex;
       flex-direction: column;
@@ -197,21 +190,11 @@
       text-align: center;
       text-decoration: none;
       display: inline-block;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .btn-dark:active {
-      transform: scale(0.98);
     }
     .btn-gold {
       background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
       box-shadow: 0 4px 15px rgba(217, 119, 6, 0.4);
       display: none;
-      animation: gold-pulse 2s infinite;
-    }
-    @keyframes gold-pulse {
-      0% { box-shadow: 0 0 10px rgba(217, 119, 6, 0.4); }
-      50% { box-shadow: 0 0 22px rgba(245, 158, 11, 0.8); }
-      100% { box-shadow: 0 0 10px rgba(217, 119, 6, 0.4); }
     }
     .spinner {
       display: inline-block;
@@ -244,9 +227,7 @@
     </div>
 
     <div class="oracle-section">
-      <div class="oracle-avatar">
-        <i class="fa-solid fa-eye"></i>
-      </div>
+      <div class="oracle-avatar"><i class="fa-solid fa-eye"></i></div>
       <div class="oracle-info">
         <h2>深層の占者 レイラ</h2>
         <p>“あなたの迷いを、ここに書き記しなさい…”</p>
@@ -264,7 +245,7 @@
 
     <div class="secret-box" id="secretMessage">
       <strong>【禁断の深層解放・真実の神託】</strong><br>
-      お支払いが確認されました。カードの奥底に封じられていた『本当の結末』と『お相手の偽らざるスマホの心理』を解き放ちます……。
+      お支払いが確認されました。カードの奥底に封じられていた『本当の結末』と『お相手の偽らざる心理』を解き放ちます……。
     </div>
 
     <div class="cards-area" id="cardsArea">
@@ -280,14 +261,11 @@
       </a>
     </div>
 
-    <div class="footer-note">
-      © Midnight Arcana • Powered by OpenAI & Vercel
-    </div>
+    <div class="footer-note">© Midnight Arcana • Powered by OpenAI & Vercel</div>
   </div>
 
   <script>
     let selectedCardNum = null;
-    const OPENAI_API_KEY = "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";
 
     window.onload = function() {
       const urlParams = new URLSearchParams(window.location.search);
@@ -314,7 +292,6 @@
           c.innerHTML = '<i class="fa-solid fa-wand-sparkles"></i>';
         }
       }
-
       const query = document.getElementById('userQuery').value.trim();
       const targetText = query ? `「${query}」というあなたの迷いについて` : "あなたの心に秘めた迷いについて";
       document.getElementById('chatMessage').innerText = `${targetText}、第 ${num} のカードが共鳴しました。「運命の結末を覗く」を押してください。`;
@@ -338,49 +315,25 @@
       document.getElementById('chatMessage').innerText = "深淵の向こうより、AI占者レイラがあなただけの神託を紡ぎ出しています……少々お待ちください。";
 
       try {
-        // 安全にCORS制限を回避するためのプロキシ経由でOpenAIを呼び出し
-        const response = await fetch("https://corsproxy.io/?https://api.openai.com/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${OPENAI_API_KEY}`
-          },
-          body: JSON.stringify({
-            model: "gpt-4o-mini",
-            messages: [
-              {
-                role: "system",
-                content: "あなたはミステリアスで少し妖艶なタロット占者「レイラ」です。ユーザーの入力した悩みと選んだカード（第1〜3のいずれか）に基づき、毎回異なる、神秘的で本格的なタロット占いの結果を日本語で200文字程度で生成してください。決まった定型文ではなく、ユーザーの悩みに深く寄り添った独自の解釈を伝えてください。"
-              },
-              {
-                role: "user",
-                content: `私の悩み：「${query}」 / 選んだカード：第${selectedCardNum}のカード`
-              }
-            ],
-            temperature: 0.9
-          })
+        const response = await fetch('/api/fortune', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query, selectedCardNum })
         });
 
         const data = await response.json();
-        if(data.choices && data.choices[0]) {
-          document.getElementById('chatMessage').innerText = data.choices[0].message.content;
+        if (response.ok && data.result) {
+          document.getElementById('chatMessage').innerText = data.result;
         } else {
-          throw new Error("APIからの応答が不正です");
+          throw new Error(data.error || '通信エラーが発生しました');
         }
       } catch (error) {
-        // 万が一の通信エラー時のフェールセーフ
-        const fallbacks = [
-          `【死神・正位置】「${query}」に関するあなたの問いに対し、カードは『古い関係の終わりと強制的な転換』を示しています。あの人は今、あなたとの間に壁を作っていますが、それは防衛本能にすぎません。`,
-          `【恋人・逆位置】「${query}」の深層には、見えないすれ違いと誘惑の影が潜んでいます。あの人もあなたを意識していながら、一歩を踏み出すのを恐れています。`,
-          `【月・正位置】「${query}」に関して、現在あなたは深い霧の中にいます。相手の真意が見えにくい夜ですが、あなたの直感は真実を捉えています。`
-        ];
-        document.getElementById('chatMessage').innerText = fallbacks[selectedCardNum - 1];
+        document.getElementById('chatMessage').innerText = "【神託の霧が濃く、今回は声が届きませんでした…もう一度お試しください】";
       }
 
       const cardsArea = document.getElementById('cardsArea');
       cardsArea.style.opacity = '0';
       setTimeout(() => { cardsArea.style.display = 'none'; }, 300);
-
       document.getElementById('inputGroup').style.display = 'none';
 
       actionBtn.disabled = false;
@@ -390,9 +343,8 @@
       document.getElementById('payBtn').style.display = 'block';
       const secretBox = document.getElementById('secretMessage');
       secretBox.style.display = 'block';
-      secretBox.innerHTML = `<strong>【この先の禁断の深層】</strong><br>「${query}」に対するあの人の本当のスマホの連絡履歴の心理、そして2人が迎える衝撃の未来結末を覗くには、下の黄金のボタンを解除してください。`;
+      secretBox.innerHTML = `<strong>【この先の禁断の深層】</strong><br>「${query}」に対するあの人の本当の心理、そして2人が迎える衝撃の未来結末を覗くには、下の黄金のボタンを解除してください。`;
     }
   </script>
-
 </body>
 </html>
