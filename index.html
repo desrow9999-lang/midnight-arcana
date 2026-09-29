@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ja" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <title>Midnight Arcana - 闇夜のタロット占者</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Noto+Serif+JP:wght@400;600&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #0b0910;
+      color: #e2e8f0;
+      font-family: 'Noto Serif JP', serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .slide-container {
+      width: 1280px;
+      height: 720px;
+      margin: 0 auto;
+      overflow: hidden;
+      box-sizing: border-box;
+      background: radial-gradient(circle at center, #181226 0%, #0b0910 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 40px 64px;
+      position: relative;
+    }
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+      padding-bottom: 16px;
+    }
+    .logo {
+      font-family: 'Cinzel', serif;
+      font-size: 22px;
+      color: #c084fc;
+      letter-spacing: 2px;
+    }
+    .badge {
+      background: rgba(147, 51, 234, 0.2);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      color: #d8b4fe;
+    }
+    .main-grid {
+      display: flex;
+      gap: 40px;
+      align-items: center;
+      flex-grow: 1;
+      margin: 20px 0;
+    }
+    .oracle-box {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      background: rgba(24, 18, 38, 0.6);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .oracle-avatar {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 2px solid #a855f7;
+      background: #2e1065;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 36px;
+      color: #f3e8ff;
+      margin-bottom: 16px;
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+    }
+    .dialogue-box {
+      flex: 1.5;
+      background: rgba(15, 12, 23, 0.8);
+      border-left: 4px solid #9333ea;
+      padding: 32px;
+      border-radius: 0 16px 16px 0;
+      position: relative;
+    }
+    h1 {
+      font-size: 28px;
+      color: #f3e8ff;
+      margin-bottom: 12px;
+      font-family: 'Cinzel', serif;
+    }
+    p {
+      font-size: 18px;
+      line-height: 1.8;
+      color: #cbd5e1;
+      margin-bottom: 16px;
+    }
+    .action-row {
+      display: flex;
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .btn-dark {
+      background: linear-gradient(135deg, #7e22ce 0%, #581c87 100%);
+      color: #fff;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(126, 34, 206, 0.4);
+      font-family: 'Noto Serif JP', serif;
+    }
+    .footer-note {
+      text-align: center;
+      font-size: 13px;
+      color: #64748b;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="slide-container" id="slide1">
+    <div class="header-bar">
+      <div class="logo"><i class="fa-solid fa-moon"></i> MIDNIGHT ARCANA</div>
+      <div class="badge">闇夜の本格タロット鑑定</div>
+    </div>
+
+    <div class="main-grid">
+      <div class="oracle-box">
+        <div class="oracle-avatar">
+          <i class="fa-solid fa-eye"></i>
+        </div>
+        <h1 contenteditable="true">深層の占者 レイラ</h1>
+        <p contenteditable="true" style="font-size: 15px; color: #a855f7;">「あなたの迷いは、カードがすでに知っています…」</p>
+      </div>
+
+      <div class="dialogue-box">
+        <h1 contenteditable="true">真実を暴く、禁断のチャット占い</h1>
+        <p contenteditable="true">
+          深夜、静寂に包まれた部屋で、画面の向こうのタロットがあなたの未来の深層を覗き見ます。生々しい恋愛の結末や、隠された真実をリアルタイムの演出でお届けします。
+        </p>
+        <div class="action-row">
+          <button class="btn-dark" contenteditable="true">運命のカードを引く</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-note" contenteditable="true">
+      Smartphone-First Web Application • Powered by Next.js & Stripe
+    </div>
+  </div>
+
+</body>
+</html>
+```eof
+
+Your slide deck on dark-themed tarot fortune-telling app is ready! Feel free to take a look and let me know if you'd like to make any edits.
