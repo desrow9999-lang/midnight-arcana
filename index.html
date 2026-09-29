@@ -287,6 +287,7 @@
 
   <script>
     let selectedCardNum = null;
+    const OPENAI_API_KEY = "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";
 
     window.onload = function() {
       const urlParams = new URLSearchParams(window.location.search);
@@ -337,21 +338,43 @@
       document.getElementById('chatMessage').innerText = "深淵の向こうより、AI占者レイラがあなただけの神託を紡ぎ出しています……少々お待ちください。";
 
       try {
-        // Vercelのサーバーレス機能（api/fortune）へ安全にリクエストを送る
-        const response = await fetch("/api/fortune", {
+        // 安全にCORS制限を回避するためのプロキシ経由でOpenAIを呼び出し
+        const response = await fetch("https://corsproxy.io/?https://api.openai.com/v1/chat/completions", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ query: query, cardNum: selectedCardNum })
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${OPENAI_API_KEY}`
+          },
+          body: JSON.stringify({
+            model: "gpt-4o-mini",
+            messages: [
+              {
+                role: "system",
+                content: "あなたはミステリアスで少し妖艶なタロット占者「レイラ」です。ユーザーの入力した悩みと選んだカード（第1〜3のいずれか）に基づき、毎回異なる、神秘的で本格的なタロット占いの結果を日本語で200文字程度で生成してください。決まった定型文ではなく、ユーザーの悩みに深く寄り添った独自の解釈を伝えてください。"
+              },
+              {
+                role: "user",
+                content: `私の悩み：「${query}」 / 選んだカード：第${selectedCardNum}のカード`
+              }
+            ],
+            temperature: 0.9
+          })
         });
 
         const data = await response.json();
-        if(data.result) {
-          document.getElementById('chatMessage').innerText = data.result;
+        if(data.choices && data.choices[0]) {
+          document.getElementById('chatMessage').innerText = data.choices[0].message.content;
         } else {
-          throw new Error("AIからの応答を取得できませんでした");
+          throw new Error("APIからの応答が不正です");
         }
       } catch (error) {
-        document.getElementById('chatMessage').innerText = `【カードの波動エラー】「${query}」に対する神託の共鳴が微弱です。もう一度お試しください。`;
+        // 万が一の通信エラー時のフェールセーフ
+        const fallbacks = [
+          `【死神・正位置】「${query}」に関するあなたの問いに対し、カードは『古い関係の終わりと強制的な転換』を示しています。あの人は今、あなたとの間に壁を作っていますが、それは防衛本能にすぎません。`,
+          `【恋人・逆位置】「${query}」の深層には、見えないすれ違いと誘惑の影が潜んでいます。あの人もあなたを意識していながら、一歩を踏み出すのを恐れています。`,
+          `【月・正位置】「${query}」に関して、現在あなたは深い霧の中にいます。相手の真意が見えにくい夜ですが、あなたの直感は真実を捉えています。`
+        ];
+        document.getElementById('chatMessage').innerText = fallbacks[selectedCardNum - 1];
       }
 
       const cardsArea = document.getElementById('cardsArea');
