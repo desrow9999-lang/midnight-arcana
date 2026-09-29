@@ -147,6 +147,7 @@
       gap: 12px;
       margin: 5px 0;
       perspective: 1000px;
+      transition: all 0.4s ease;
     }
     .tarot-card {
       width: 65px;
@@ -213,6 +214,20 @@
       50% { box-shadow: 0 0 22px rgba(245, 158, 11, 0.8); }
       100% { box-shadow: 0 0 10px rgba(217, 119, 6, 0.4); }
     }
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 0.8s linear infinite;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
     .footer-note {
       text-align: center;
       font-size: 11px;
@@ -253,6 +268,7 @@
       お支払いが確認されました。カードの奥底に封じられていた『本当の結末』と『お相手の偽らざるスマホの心理』を解き放ちます……。
     </div>
 
+    <!-- カードエリア（選択後には完全に非表示になります） -->
     <div class="cards-area" id="cardsArea">
       <div class="tarot-card" id="card1" onclick="selectCard(1)"><i class="fa-solid fa-wand-sparkles"></i></div>
       <div class="tarot-card" id="card2" onclick="selectCard(2)"><i class="fa-solid fa-wand-sparkles"></i></div>
@@ -289,7 +305,6 @@
 
     function selectCard(num) {
       selectedCardNum = num;
-      // すべてのカードのフリップ状態をリセットし、選ばれたカードだけフリップさせる
       for(let i = 1; i <= 3; i++) {
         const c = document.getElementById(`card${i}`);
         if(i === num) {
@@ -315,22 +330,44 @@
       }
       if(!selectedCardNum) {
         alert('下の3枚のカードから1枚選んでください。');
-        return;
       }
 
-      const results = [
-        `【死神・正位置】「${query}」に関するあなたの問いに対し、カードは『古い関係の終わりと強制的な転換』を示しています。あの人は今、あなたとの間に壁を作っているように見えますが、それは防衛本能にすぎません。`,
-        `【恋人・逆位置】「${query}」の深層には、見えないすれ違いと誘惑の影が潜んでいます。あの人もあなたを意識していながら、一歩を踏み出すのを恐れています。`,
-        `【月・正位置】「${query}」に関して、現在あなたは深い霧の中にいます。相手の真意が見えにくい夜ですが、あなたの直感は真実を捉えています。`
-      ];
+      const actionBtn = document.getElementById('actionBtn');
+      actionBtn.disabled = true;
+      actionBtn.innerHTML = '<span class="spinner"></span>神託を降ろしています...';
+      document.getElementById('chatMessage').innerText = "深淵の向こうより、カードの意志を読み解いています……少々お待ちください。";
 
-      document.getElementById('chatMessage').innerText = results[selectedCardNum - 1];
-      document.getElementById('actionBtn').innerText = '最初からやり直す';
-      document.getElementById('actionBtn').onclick = function() { location.reload(); };
-      
-      document.getElementById('payBtn').style.display = 'block';
-      document.getElementById('secretMessage').style.display = 'block';
-      document.getElementById('secretMessage').innerHTML = `<strong>【この先の禁断の深層】</strong><br>「${query}」に対するあの人の本当のスマホの連絡履歴の心理、そして2人が迎える衝撃の未来結末を覗くには、下の黄金のボタンを解除してください。`;
+      // リアルな演出のための少しのウェイト（0.8秒後に結果を表示）
+      setTimeout(() => {
+        const aiResponses = [
+          `【死神・正位置】「${query}」に関するあなたの問いに対し、カードは『古い関係の終わりと強制的な転換』を示しています。あの人は今、あなたとの間に壁を作っているように見えますが、それは防衛本能にすぎません。`,
+          `【恋人・逆位置】「${query}」の深層には、見えないすれ違いと誘惑の影が潜んでいます。あの人もあなたを意識していながら、一歩を踏み出すのを恐れています。`,
+          `【月・正位置】「${query}」に関して、現在あなたは深い霧の中にいます。相手の真意が見えにくい夜ですが、あなたの直感は真実を捉えています。`
+        ];
+
+        document.getElementById('chatMessage').innerText = aiResponses[selectedCardNum - 1];
+
+        // カード選択エリアを完全に非表示にしてUIをすっきり整理
+        const cardsArea = document.getElementById('cardsArea');
+        cardsArea.style.opacity = '0';
+        setTimeout(() => {
+          cardsArea.style.display = 'none';
+        }, 300);
+
+        // 入力欄も非表示にして結果に集中させる
+        document.getElementById('inputGroup').style.display = 'none';
+
+        // ボタンをリセット
+        actionBtn.disabled = false;
+        actionBtn.innerText = '最初からやり直す';
+        actionBtn.onclick = function() { location.reload(); };
+        
+        // 決済ボタンとシークレット予告を表示
+        document.getElementById('payBtn').style.display = 'block';
+        const secretBox = document.getElementById('secretMessage');
+        secretBox.style.display = 'block';
+        secretBox.innerHTML = `<strong>【この先の禁断の深層】</strong><br>「${query}」に対するあの人の本当のスマホの連絡履歴の心理、そして2人が迎える衝撃の未来結末を覗くには、下の黄金のボタンを解除してください。`;
+      }, 800);
     }
   </script>
 
