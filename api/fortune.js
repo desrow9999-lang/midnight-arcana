@@ -1,13 +1,13 @@
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  const { query, cardNum } = req.body;
+  const { query, selectedCardNum } = req.body;
   const apiKey = process.env.OPENAI_API_KEY;
 
   if (!apiKey) {
-    return res.status(500).json({ error: 'OpenAI API Key is not configured on Vercel' });
+    return res.status(500).json({ error: 'OpenAI API key is not configured on Vercel.' });
   }
 
   try {
@@ -22,11 +22,11 @@ export default async function handler(req, res) {
         messages: [
           {
             role: "system",
-            content: "あなたはミステリアスで少し妖艶なタロット占者「レイラ」です。ユーザーの入力した悩みと選んだタロットカード（第1〜3のいずれか）に基づき、毎回異なる、神秘的で本格的なタロット占いの結果を日本語で200文字程度で生成してください。決まった定型文ではなく、ユーザーの悩みに深く寄り添った独自の解釈を伝えてください。"
+            content: "あなたはミステリアスで少し妖艶なタロット占者「レイラ」です。ユーザーの入力した悩みと選んだカード（第1〜3のいずれか）に基づき、毎回異なる、神秘的で本格的なタロット占いの結果を日本語で200文字程度で生成してください。決まった定型文ではなく、ユーザーの悩みに深く寄り添った独自の解釈を伝えてください。"
           },
           {
             role: "user",
-            content: `私の悩み：「${query}」 / 選んだカード：第${cardNum}のカード`
+            content: `私の悩み：「${query}」 / 選んだカード：第${selectedCardNum}のカード`
           }
         ],
         temperature: 0.9
@@ -37,7 +37,7 @@ export default async function handler(req, res) {
     if (data.choices && data.choices[0]) {
       return res.status(200).json({ result: data.choices[0].message.content });
     } else {
-      throw new Error("Invalid response from OpenAI");
+      throw new Error(data.error?.message || 'AIからの応答が不正です');
     }
   } catch (error) {
     return res.status(500).json({ error: error.message });
