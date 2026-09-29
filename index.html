@@ -29,7 +29,7 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.8);
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 16px;
     }
     .header-bar {
       display: flex;
@@ -58,40 +58,64 @@
       gap: 16px;
       background: rgba(24, 18, 38, 0.6);
       border: 1px solid rgba(168, 85, 247, 0.2);
-      padding: 16px;
+      padding: 14px;
       border-radius: 12px;
     }
     .oracle-avatar {
-      width: 60px;
-      height: 60px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
       border: 2px solid #a855f7;
       background: #2e1065;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 24px;
+      font-size: 20px;
       color: #f3e8ff;
       flex-shrink: 0;
       box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
     }
     .oracle-info h2 {
-      font-size: 16px;
+      font-size: 15px;
       color: #f3e8ff;
       font-family: 'Cinzel', serif;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
     .oracle-info p {
-      font-size: 12px;
+      font-size: 11px;
       color: #a855f7;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .input-group label {
+      font-size: 12px;
+      color: #d8b4fe;
+    }
+    .input-dark {
+      width: 100%;
+      background: rgba(15, 12, 23, 0.9);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      border-radius: 8px;
+      padding: 12px;
+      color: #fff;
+      font-family: 'Noto Serif JP', serif;
+      font-size: 13px;
+    }
+    .input-dark:focus {
+      outline: none;
+      border-color: #c084fc;
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
     }
     .chat-box {
       background: rgba(15, 12, 23, 0.9);
       border-left: 3px solid #9333ea;
-      padding: 16px;
+      padding: 14px;
       border-radius: 0 12px 12px 0;
-      min-height: 120px;
-      font-size: 14px;
+      min-height: 90px;
+      font-size: 13px;
       line-height: 1.6;
       color: #cbd5e1;
     }
@@ -99,11 +123,11 @@
       display: flex;
       justify-content: center;
       gap: 12px;
-      margin: 10px 0;
+      margin: 5px 0;
     }
     .tarot-card {
-      width: 70px;
-      height: 110px;
+      width: 65px;
+      height: 100px;
       background: linear-gradient(135deg, #2e1065 0%, #1e1b4b 100%);
       border: 2px solid #7e22ce;
       border-radius: 8px;
@@ -112,12 +136,12 @@
       align-items: center;
       cursor: pointer;
       transition: transform 0.3s, border-color 0.3s;
-      font-size: 20px;
+      font-size: 18px;
       color: #a855f7;
       box-shadow: 0 4px 10px rgba(0,0,0,0.5);
     }
     .tarot-card:hover, .tarot-card.selected {
-      transform: translateY(-8px);
+      transform: translateY(-6px);
       border-color: #c084fc;
       color: #f3e8ff;
       box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
@@ -150,13 +174,13 @@
     .btn-gold {
       background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
       box-shadow: 0 4px 15px rgba(217, 119, 6, 0.4);
-      display: none; /* 初期状態では非表示 */
+      display: none;
     }
     .footer-note {
       text-align: center;
       font-size: 11px;
       color: #64748b;
-      margin-top: 10px;
+      margin-top: 5px;
     }
   </style>
 </head>
@@ -165,7 +189,7 @@
   <div class="app-container">
     <div class="header-bar">
       <div class="logo"><i class="fa-solid fa-moon"></i> MIDNIGHT ARCANA</div>
-      <div class="badge">闇夜の本格鑑定</div>
+      <div class="badge">闇夜のAI深層鑑定</div>
     </div>
 
     <div class="oracle-section">
@@ -174,12 +198,18 @@
       </div>
       <div class="oracle-info">
         <h2>深層の占者 レイラ</h2>
-        <p>「あなたの迷いは、カードがすでに知っています…」</p>
+        <p>「あなたの迷いを、ここに書き記しなさい…」</p>
       </div>
     </div>
 
+    <!-- 悩みの入力フィールド -->
+    <div class="input-group">
+      <label for="userQuery"><i class="fa-solid fa-feather"></i> あなたの悩みや相手との関係</label>
+      <input type="text" id="userQuery" class="input-dark" placeholder="例：あの人は今、私のことをどう思っている？">
+    </div>
+
     <div class="chat-box" id="chatMessage">
-      深夜、静寂に包まれた部屋へようこそ。あなたの心に巣食う迷いや、あの人の本音について…下の3枚のカードから、直感で1枚選びなさい。
+      深夜の闇へようこそ。上の欄にあなたの悩みを打ち込み、下の3枚のカードから直感で1枚選びなさい。カードとあなたの思念が共鳴します。
     </div>
 
     <div class="cards-area" id="cardsArea">
@@ -189,8 +219,7 @@
     </div>
 
     <div class="action-row">
-      <button class="btn-dark" id="actionBtn" onclick="startReading()">カードを選ぶ</button>
-      <!-- Stripe決済リンクを紐づけた有料深層鑑定ボタン -->
+      <button class="btn-dark" id="actionBtn" onclick="startReading()">運命のカードを引く</button>
       <a href="https://buy.stripe.com/7sY00i95A62B6gX0luEZ20k" target="_blank" class="btn-dark btn-gold" id="payBtn">
         <i class="fa-solid fa-lock"></i> 禁断の深層へ踏み込む（¥300）
       </a>
@@ -213,38 +242,35 @@
           card.classList.remove('selected');
         }
       });
-      document.getElementById('chatMessage').innerText = `第 ${num} のカードが選ばれました。運命の扉が開きます…「鑑定結果を見る」を押してください。`;
+      const query = document.getElementById('userQuery').value.trim();
+      const targetText = query ? `「${query}」というあなたの迷いについて` : "あなたの心に秘めた迷いについて";
+      document.getElementById('chatMessage').innerText = `${targetText}、第 ${num} のカードが共鳴しました。「運命の結末を覗く」を押してください。`;
       document.getElementById('actionBtn').innerText = '運命の結末を覗く';
     }
 
     function startReading() {
-      if(!selectedCardNum) {
-        alert('まずは上の3枚から、直感でカードを1枚選んでください。');
+      const query = document.getElementById('userQuery').value.trim();
+      if(!query) {
+        alert('まずは上の欄にあなたの悩みや気になることを入力してください。');
         return;
       }
+      if(!selectedCardNum) {
+        alert('下の3枚のカードから1枚選んでください。');
+        return;
+      }
+
       const results = [
-        "【死神・正位置】あなたが恐れている結末は、古い関係の終わりと新たな再生を意味しています。あの人は今、あなたとの距離感を見つめ直しています。（※これより先の『本当の二人の結末』および『相手のスマホの心理』を覗くには、下の黄金の禁断ボタンを解除してください）",
-        "【恋人・逆位置】すれ違いや誘惑の暗示。お互いの気持ちに少し曇りが出ています。しかし、真実の対話を避ければ、関係は冷えてしまうでしょう…（※これより先の『本当の二人の結末』および『相手のスマホの心理』を覗くには、下の黄金の禁断ボタンを解除してください）",
-        "【月・正位置】隠された真実や不安が浮き彫りになる夜です。相手の本心は見えにくいですが、あなたの直感は間違っていません。（※これより先の『本当の二人の結末』および『相手のスマホの心理』を覗くには、下の黄金の禁断ボタンを解除してください）"
+        `【死神・正位置】「${query}」に関するあなたの問いに対し、カードは『古い関係の終わりと強制的な転換』を示しています。あの人は今、あなたとの間に壁を作っているように見えますが、それは防衛本能にすぎません。（※これより先の『あの人のスマホ事情・隠された本音』を覗くには、下の黄金の禁断ボタンを解除してください）`,
+        `【恋人・逆位置】「${query}」の深層には、見えないすれ違いと誘惑の影が潜んでいます。相手もあなたを意識していながら、一歩を踏み出すのを恐れています。（※これより先の『あの人のスマホ事情・隠された本音』を覗くには、下の黄金の禁断ボタンを解除してください）`,
+        `【月・正位置】「${query}」に関して、現在あなたは深い霧の中にいます。相手の真意が見えにくい夜ですが、あなたの直感は真実を捉えています。（※これより先の『あの人のスマホ事情・隠された本音』を覗くには、下の黄金の禁断ボタンを解除してください）`
       ];
+
       document.getElementById('chatMessage').innerText = results[selectedCardNum - 1];
-      
-      // ボタンを切り替え（もう一度占う ＆ 決済ボタンを表示）
-      document.getElementById('actionBtn').innerText = '最初からやり直す';
+      document.getElementById('actionBtn').innerText = 'もう一度占う';
       document.getElementById('actionBtn').onclick = function() { location.reload(); };
-      
-      // 決済ボタンを表示する
       document.getElementById('payBtn').style.display = 'block';
     }
   </script>
 
 </body>
 </html>
-```eof
-
----
-
-### 🚀 次の確認
-このコードをGitHubに反映させると、カードを引いた後に**「黄金のStripe決済ボタン（¥300）」**が出現し、タップするとあなたが先ほど作成したStripeの決済画面に直接飛ぶようになります[span_2](start_span)[span_2](end_span)。
-
-スマホで実際にデプロイして、決済ボタンが綺麗に機能するか試してみてくださいね！
