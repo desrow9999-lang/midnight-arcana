@@ -74,6 +74,12 @@
       color: #f3e8ff;
       flex-shrink: 0;
       box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+      animation: pulse-glow 3s infinite;
+    }
+    @keyframes pulse-glow {
+      0% { box-shadow: 0 0 10px rgba(168, 85, 247, 0.3); }
+      50% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.7); }
+      100% { box-shadow: 0 0 10px rgba(168, 85, 247, 0.3); }
     }
     .oracle-info h2 {
       font-size: 15px;
@@ -103,39 +109,44 @@
       color: #fff;
       font-family: 'Noto Serif JP', serif;
       font-size: 13px;
+      transition: all 0.3s;
     }
     .input-dark:focus {
       outline: none;
       border-color: #c084fc;
-      box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
+    }
+    .chat-box, .secret-box {
+      padding: 14px;
+      border-radius: 0 12px 12px 0;
+      font-size: 13px;
+      line-height: 1.6;
+      animation: fadeIn 0.6s ease-in-out;
     }
     .chat-box {
       background: rgba(15, 12, 23, 0.9);
       border-left: 3px solid #9333ea;
-      padding: 14px;
-      border-radius: 0 12px 12px 0;
-      min-height: 90px;
-      font-size: 13px;
-      line-height: 1.6;
       color: #cbd5e1;
     }
-    /* シークレット（購入後）専用の赤く怪しく光るボックス */
     .secret-box {
       background: rgba(46, 10, 20, 0.9);
       border-left: 3px solid #ef4444;
-      padding: 14px;
-      border-radius: 0 12px 12px 0;
-      font-size: 13px;
-      line-height: 1.6;
       color: #fecaca;
       display: none;
       box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
     }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 3Dカードフリップ演出用スタイル */
     .cards-area {
       display: flex;
       justify-content: center;
       gap: 12px;
       margin: 5px 0;
+      perspective: 1000px;
     }
     .tarot-card {
       width: 65px;
@@ -147,17 +158,24 @@
       justify-content: center;
       align-items: center;
       cursor: pointer;
-      transition: transform 0.3s, border-color 0.3s;
       font-size: 18px;
       color: #a855f7;
       box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1), border-color 0.3s, box-shadow 0.3s;
+      transform-style: preserve-3d;
     }
-    .tarot-card:hover, .tarot-card.selected {
-      transform: translateY(-6px);
+    .tarot-card.flipped {
+      transform: rotateY(180deg) translateY(-8px);
+      background: linear-gradient(135deg, #4c1d95 0%, #311042 100%);
       border-color: #c084fc;
       color: #f3e8ff;
-      box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.8);
     }
+    .tarot-card:hover:not(.flipped) {
+      transform: translateY(-4px);
+      border-color: #a855f7;
+    }
+
     .action-row {
       display: flex;
       flex-direction: column;
@@ -179,6 +197,7 @@
       text-align: center;
       text-decoration: none;
       display: inline-block;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
     .btn-dark:active {
       transform: scale(0.98);
@@ -187,6 +206,12 @@
       background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
       box-shadow: 0 4px 15px rgba(217, 119, 6, 0.4);
       display: none;
+      animation: gold-pulse 2s infinite;
+    }
+    @keyframes gold-pulse {
+      0% { box-shadow: 0 0 10px rgba(217, 119, 6, 0.4); }
+      50% { box-shadow: 0 0 22px rgba(245, 158, 11, 0.8); }
+      100% { box-shadow: 0 0 10px rgba(217, 119, 6, 0.4); }
     }
     .footer-note {
       text-align: center;
@@ -223,22 +248,20 @@
       深夜の闇へようこそ。上の欄にあなたの悩みを打ち込み、下の3枚のカードから直感で1枚選びなさい。カードとあなたの思念が共鳴します。
     </div>
 
-    <!-- 決済完了後に現れるシークレットの深層結果表示エリア -->
     <div class="secret-box" id="secretMessage">
       <strong>【禁断の深層解放・真実の神託】</strong><br>
       お支払いが確認されました。カードの奥底に封じられていた『本当の結末』と『お相手の偽らざるスマホの心理』を解き放ちます……。
     </div>
 
     <div class="cards-area" id="cardsArea">
-      <div class="tarot-card" onclick="selectCard(1)"><i class="fa-solid fa-wand-sparkles"></i></div>
-      <div class="tarot-card" onclick="selectCard(2)"><i class="fa-solid fa-wand-sparkles"></i></div>
-      <div class="tarot-card" onclick="selectCard(3)"><i class="fa-solid fa-wand-sparkles"></i></div>
+      <div class="tarot-card" id="card1" onclick="selectCard(1)"><i class="fa-solid fa-wand-sparkles"></i></div>
+      <div class="tarot-card" id="card2" onclick="selectCard(2)"><i class="fa-solid fa-wand-sparkles"></i></div>
+      <div class="tarot-card" id="card3" onclick="selectCard(3)"><i class="fa-solid fa-wand-sparkles"></i></div>
     </div>
 
     <div class="action-row">
       <button class="btn-dark" id="actionBtn" onclick="startReading()">運命のカードを引く</button>
-      <!-- Stripe決済ボタン（Stripe側でこのアプリのURLを成功時リダイレクトに設定することで、戻ってきたときにシークレットを自動表示させることも可能です） -->
-      <a href="https://buy.stripe.com/7sY00i95A62B6gX0luEZ20k" target="_blank" class="btn-dark btn-gold" id="payBtn" onclick="simulatePaymentReturn()">
+      <a href="https://buy.stripe.com/7sY00i95A62B6gX0luEZ20k" target="_blank" class="btn-dark btn-gold" id="payBtn">
         <i class="fa-solid fa-lock"></i> 禁断の深層へ踏み込む（¥300）
       </a>
     </div>
@@ -251,12 +274,10 @@
   <script>
     let selectedCardNum = null;
 
-    // ページ読み込み時にURLのパラメータ（例: ?unlocked=true）をチェックして、決済後戻ってきた状態を再現
     window.onload = function() {
       const urlParams = new URLSearchParams(window.location.search);
       if(urlParams.get('unlocked') === 'true') {
         document.getElementById('chatMessage').innerText = "【決済完了：深層の扉は開かれました】";
-        document.getElementById('secretMessage.style.display') = 'block';
         document.getElementById('secretMessage').style.display = 'block';
         document.getElementById('cardsArea').style.display = 'none';
         document.getElementById('inputGroup').style.display = 'none';
@@ -268,13 +289,18 @@
 
     function selectCard(num) {
       selectedCardNum = num;
-      document.querySelectorAll('.tarot-card').forEach((card, index) => {
-        if(index + 1 === num) {
-          card.classList.add('selected');
+      // すべてのカードのフリップ状態をリセットし、選ばれたカードだけフリップさせる
+      for(let i = 1; i <= 3; i++) {
+        const c = document.getElementById(`card${i}`);
+        if(i === num) {
+          c.classList.add('flipped');
+          c.innerHTML = '<i class="fa-solid fa-eye-low-vision" style="transform: rotateY(180deg);"></i>';
         } else {
-          card.classList.remove('selected');
+          c.classList.remove('flipped');
+          c.innerHTML = '<i class="fa-solid fa-wand-sparkles"></i>';
         }
-      });
+      }
+
       const query = document.getElementById('userQuery').value.trim();
       const targetText = query ? `「${query}」というあなたの迷いについて` : "あなたの心に秘めた迷いについて";
       document.getElementById('chatMessage').innerText = `${targetText}、第 ${num} のカードが共鳴しました。「運命の結末を覗く」を押してください。`;
@@ -302,16 +328,9 @@
       document.getElementById('actionBtn').innerText = '最初からやり直す';
       document.getElementById('actionBtn').onclick = function() { location.reload(); };
       
-      // 決済ボタンを表示し、さらに購入後のシークレットボックスの予告を表示
       document.getElementById('payBtn').style.display = 'block';
       document.getElementById('secretMessage').style.display = 'block';
-      document.getElementById('secretMessage.style.display') = 'block';
       document.getElementById('secretMessage').innerHTML = `<strong>【この先の禁断の深層】</strong><br>「${query}」に対するあの人の本当のスマホの連絡履歴の心理、そして2人が迎える衝撃の未来結末を覗くには、下の黄金のボタンを解除してください。`;
-    }
-
-    // デモ・テスト用に決済ボタンを押したときにシークレットを擬似開放する仕組み（実運用の際はStripeの転送先URLに ?unlocked=true を指定します）
-    function simulatePaymentReturn() {
-      // ユーザーがStripe決済に行ったあと、戻ってきたときの挙動を体験しやすくしています
     }
   </script>
 
