@@ -123,7 +123,9 @@
       box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
     }
     .action-row {
-      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
     .btn-dark {
       background: linear-gradient(135deg, #7e22ce 0%, #581c87 100%);
@@ -138,9 +140,17 @@
       box-shadow: 0 4px 15px rgba(126, 34, 206, 0.4);
       font-family: 'Noto Serif JP', serif;
       letter-spacing: 1px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
     }
     .btn-dark:active {
       transform: scale(0.98);
+    }
+    .btn-gold {
+      background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+      box-shadow: 0 4px 15px rgba(217, 119, 6, 0.4);
+      display: none; /* 初期状態では非表示 */
     }
     .footer-note {
       text-align: center;
@@ -172,7 +182,7 @@
       深夜、静寂に包まれた部屋へようこそ。あなたの心に巣食う迷いや、あの人の本音について…下の3枚のカードから、直感で1枚選びなさい。
     </div>
 
-    <div class="cards-area">
+    <div class="cards-area" id="cardsArea">
       <div class="tarot-card" onclick="selectCard(1)"><i class="fa-solid fa-wand-sparkles"></i></div>
       <div class="tarot-card" onclick="selectCard(2)"><i class="fa-solid fa-wand-sparkles"></i></div>
       <div class="tarot-card" onclick="selectCard(3)"><i class="fa-solid fa-wand-sparkles"></i></div>
@@ -180,10 +190,14 @@
 
     <div class="action-row">
       <button class="btn-dark" id="actionBtn" onclick="startReading()">カードを選ぶ</button>
+      <!-- Stripe決済リンクを紐づけた有料深層鑑定ボタン -->
+      <a href="https://buy.stripe.com/7sY00i95A62B6gX0luEZ20k" target="_blank" class="btn-dark btn-gold" id="payBtn">
+        <i class="fa-solid fa-lock"></i> 禁断の深層へ踏み込む（¥300）
+      </a>
     </div>
 
     <div class="footer-note">
-      © Midnight Arcana • Powered by Vercel
+      © Midnight Arcana • Powered by Stripe & Vercel
     </div>
   </div>
 
@@ -199,7 +213,6 @@
           card.classList.remove('selected');
         }
       });
-      document.getElementById('chatMessageinnerHTML').innerHTML = '';
       document.getElementById('chatMessage').innerText = `第 ${num} のカードが選ばれました。運命の扉が開きます…「鑑定結果を見る」を押してください。`;
       document.getElementById('actionBtn').innerText = '運命の結末を覗く';
     }
@@ -210,13 +223,18 @@
         return;
       }
       const results = [
-        "【死神・正位置】あなたが恐れている結末は、古い関係の終わりと新たな再生を意味しています。あの人は今、あなたとの距離感を見つめ直しています。焦りは禁物です。",
-        "【恋人・逆位置】すれ違いや誘惑の暗示。お互いの気持ちに少し曇りが出ています。しかし、真実の対話を避ければ、関係は冷えてしまうでしょう…深夜の連絡が鍵となります。",
-        "【月・正位置】隠された真実や不安が浮き彫りになる夜です。相手の本心は見えにくいですが、あなたの直感は間違っていません。あえて今は動かないことが最善の防御となります。"
+        "【死神・正位置】あなたが恐れている結末は、古い関係の終わりと新たな再生を意味しています。あの人は今、あなたとの距離感を見つめ直しています。（※これより先の『本当の二人の結末』および『相手のスマホの心理』を覗くには、下の黄金の禁断ボタンを解除してください）",
+        "【恋人・逆位置】すれ違いや誘惑の暗示。お互いの気持ちに少し曇りが出ています。しかし、真実の対話を避ければ、関係は冷えてしまうでしょう…（※これより先の『本当の二人の結末』および『相手のスマホの心理』を覗くには、下の黄金の禁断ボタンを解除してください）",
+        "【月・正位置】隠された真実や不安が浮き彫りになる夜です。相手の本心は見えにくいですが、あなたの直感は間違っていません。（※これより先の『本当の二人の結末』および『相手のスマホの心理』を覗くには、下の黄金の禁断ボタンを解除してください）"
       ];
       document.getElementById('chatMessage').innerText = results[selectedCardNum - 1];
-      document.getElementById('actionBtn').innerText = 'もう一度占う';
+      
+      // ボタンを切り替え（もう一度占う ＆ 決済ボタンを表示）
+      document.getElementById('actionBtn').innerText = '最初からやり直す';
       document.getElementById('actionBtn').onclick = function() { location.reload(); };
+      
+      // 決済ボタンを表示する
+      document.getElementById('payBtn').style.display = 'block';
     }
   </script>
 
@@ -224,10 +242,9 @@
 </html>
 ```eof
 
-### 🛠️ 次のステップ（スマホでの反映方法）
-1. スマホのGitHub（先ほどの `midnight-arcana` リポジトリの `index.html`）を開く。
-2. 編集ボタン（ペンマーク）をタップし、上の新しいコードを**すべてコピーして貼り替え**。
-3. 下の **「Commit changes...」** を保存。
-4. 数十秒待ってからVercelのURLを再読み込みすると、スマホの画面にぴったりのインタラクティブな占いアプリに生まれ変わります！
+---
 
-実際にカードをタップして結果が出るか、ぜひ試してみてくださいね！
+### 🚀 次の確認
+このコードをGitHubに反映させると、カードを引いた後に**「黄金のStripe決済ボタン（¥300）」**が出現し、タップするとあなたが先ほど作成したStripeの決済画面に直接飛ぶようになります[span_2](start_span)[span_2](end_span)。
+
+スマホで実際にデプロイして、決済ボタンが綺麗に機能するか試してみてくださいね！
